@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "sample": {"type":"string","description":"Unique sample ID"},
+      "fastq_1": {"type":"string","description":"R1 FASTQ file"},
+      "fastq_2": {"type":"string","description":"Optional R2 FASTQ file"},
+      "condition": {"type":"string","description":"Experimental condition"},
+      "replicate": {"type":"integer","description":"Biological replicate number"}
+    },
+    "required": ["sample", "fastq_1"]
+  }
+}

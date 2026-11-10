@@ -1,0 +1,23 @@
+[Unit]
+Description=BioCompute scientific command center
+After=network.target
+
+[Service]
+Type=simple
+User=biocompute
+Group=biocompute
+WorkingDirectory=/opt/BioCompute
+EnvironmentFile=-/etc/biocompute.env
+ExecStart=/opt/BioCompute/.venv/bin/python -m biocompute.app
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/BioCompute/state
+# If data roots are mounted read-only, add ReadOnlyPaths for them.
+# Restrict networking and process execution with your institutional security team.
+
+[Install]
+WantedBy=multi-user.target

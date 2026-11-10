@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: biocompute
+      POSTGRES_PASSWORD: ${BIOCOMPUTE_DB_PASSWORD:?Set BIOCOMPUTE_DB_PASSWORD in .env}
+      POSTGRES_DB: biocompute
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U biocompute -d biocompute"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      BIOCOMPUTE_STATE_DIR: /app/state
+      BIOCOMPUTE_DATA_DIR: /data
+      BIOCOMPUTE_DATABASE_URL: postgresql+psycopg://biocompute:${BIOCOMPUTE_DB_PASSWORD:?Set BIOCOMPUTE_DB_PASSWORD in .env}@db:5432/biocompute
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - app_state:/app/state
+      - ${BIOCOMPUTE_HOST_DATA_DIR:-./examples/data}:/data:ro
+    security_opt:
+      - no-new-privileges:true
+    # The container does not include Nextflow. Use native setup for Nextflow runs.
+
+volumes:
+  postgres_data:
+  app_state:
